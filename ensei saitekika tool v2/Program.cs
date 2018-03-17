@@ -19,7 +19,7 @@ namespace ConsoleApp3
                 int[] sigen = new int[] { 80, 20, 250, 280 };
                 int[] Time = new int[] { 40, 90, 300, 500 };
 
-                var mokuhyou = 1000;
+                var mokuhyou = 10000;
 
 
                 //カウント
@@ -37,7 +37,7 @@ namespace ConsoleApp3
                 var e1 = solver.MakeConstraint(mokuhyou, double.PositiveInfinity);
                 foreach (var tmp in Counts.Zip(sigen, (a, b) => (count: a, sigen: b)))
                     e1.SetCoefficient(tmp.count, tmp.sigen);
-                e1.SetCoefficient(TotalTime, 1.0 / 3.0);
+                e1.SetCoefficient(TotalTime, 1.0/3.0);
 
                 //同時出撃防止遠征制約
                 Constraint[] e2 = new Constraint[Counts.Length];
@@ -51,10 +51,15 @@ namespace ConsoleApp3
 
 
 
+                var e3 = solver.MakeConstraint(0, double.PositiveInfinity);
+                foreach (var tmp in Counts.Zip(Time, (a, b) => (count: a, time: b)))
+                    e3.SetCoefficient(tmp.count, tmp.time);
+                e3.SetCoefficient(TotalTime, -3);
+
 
                 var reslt = solver.Solve();
                 if (reslt != Solver.OPTIMAL)
-                {
+                { 
                     Console.WriteLine("ソルバーで解けませんでした。");
                     return;
                 }
@@ -74,6 +79,16 @@ namespace ConsoleApp3
                 }
                 Console.WriteLine((int)(sum + TotalTime.SolutionValue() * (1.0 / 3.0)));
                 Console.WriteLine(TotalTime.SolutionValue());
+                k = 0;
+                sum = 0;
+                foreach (var Count in Counts)
+                {
+                    sum += Count.SolutionValue() * Time[k];
+                    k++;
+                }
+
+                Console.WriteLine(sum);
+
             }
             return;
         }
