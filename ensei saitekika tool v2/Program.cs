@@ -51,7 +51,7 @@ namespace ConsoleApp3
 
 
 
-                var e3 = solver.MakeConstraint(0, double.PositiveInfinity);
+                var e3 = solver.MakeConstraint(double.NegativeInfinity, 0);
                 foreach (var tmp in Counts.Zip(Time, (a, b) => (count: a, time: b)))
                     e3.SetCoefficient(tmp.count, tmp.time);
                 e3.SetCoefficient(TotalTime, -3);
